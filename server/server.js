@@ -56,24 +56,35 @@ app.use((req, res, next) => {
 
 async function startServer() {
   try {
+    console.log('🔧 Starting server initialization...');
+    console.log('📍 PORT:', PORT);
+    console.log('📍 NODE_ENV:', process.env.NODE_ENV);
+    
     // Initialize database
+    console.log('🔧 Initializing database...');
     await initDatabase();
     console.log('✅ Database initialized');
+    console.log('🔧 Setting up routes...');
 
     // Setup routes
     setupRoutes(app);
     console.log('✅ Routes configured');
+    console.log('🔧 Setting up Socket.io...');
 
     // Setup Socket.io handlers
     setupSocketHandlers(io);
     console.log('✅ Socket.io handlers configured');
+    console.log('🔧 Setting up cron jobs...');
 
     // Setup cron jobs for reminders
     setupCron();
     console.log('✅ Cron jobs scheduled');
+    console.log('🔧 Adding error handler middleware...');
 
     // Error handling middleware (must be last)
     app.use(errorHandler);
+    console.log('✅ Error handler configured');
+    console.log('🔧 Starting server listener...');
 
     server.listen(PORT, '0.0.0.0', () => {
       console.log(`🏥 IntelliHealth Backend running on port ${PORT}`);
@@ -82,6 +93,7 @@ async function startServer() {
 
   } catch (error) {
     console.error('❌ Failed to start server:', error);
+    console.error('❌ Error stack:', error.stack);
     process.exit(1);
   }
 }
