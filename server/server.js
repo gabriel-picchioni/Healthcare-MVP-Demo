@@ -48,6 +48,11 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Static file serving for attachments
 app.use('/uploads', express.static(join(__dirname, 'uploads')));
 
+// Serve static files from the Vite build
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(join(__dirname, '../dist')));
+}
+
 // Add socket.io to request context
 app.use((req, res, next) => {
   req.io = io;
@@ -80,6 +85,13 @@ async function startServer() {
     setupCron();
     console.log('✅ Cron jobs scheduled');
     console.log('🔧 Adding error handler middleware...');
+
+    // Serve index.html for all other routes in production (SPA support)
+    if (process.env.NODE_ENV === 'production') {
+      app.get('*', (req, res) => {
+        res.sendFile(join(__dirname, '../dist/index.html'));
+      });
+    }
 
     // Error handling middleware (must be last)
     app.use(errorHandler);
